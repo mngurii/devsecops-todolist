@@ -20,6 +20,10 @@ services:
     image: sonarqube:lts-community
     ports:
       - "9001:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
 
   prometheus:
     image: prom/prometheus
@@ -35,3 +39,8 @@ services:
     image: prom/node-exporter
     ports:
       - "9100:9100"
+
+  volumes:
+    sonarqube_data:
+    sonarqube_logs:
+    sonarqube_extensions:
