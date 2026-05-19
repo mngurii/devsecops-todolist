@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dashboard</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      padding: 30px;
+      color: white;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      background: white;
+      color: #3b82f6;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logout {
+      background: #111;
+      color: white;
+    }
+
+    .card {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(15px);
+      padding: 20px;
+      border-radius: 15px;
+    }
+
+    .task {
+      background: rgba(255,255,255,0.2);
+      padding: 15px;
+      border-radius: 12px;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+
+    .task.done {
+      opacity: 0.5;
+      border-left: 5px solid #22c55e;
+    }
+
+    .task.pending {
+      border-left: 5px solid #facc15;
+    }
+
+    .title { font-weight: bold; }
+    .desc { opacity: 0.8; }
+    .time { font-size: 12px; opacity: 0.7; }
+
+    .actions {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .actions button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .edit { background: #facc15; color: black; }
+    .delete { background: #ef4444; color: white; }
+    .done-btn { background: #22c55e; color: white; }
+
+    .task:hover {
+      transform: scale(1.01);
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h2>Dashboard</h2>
+
+  <div style="display:flex; gap:10px;">
+    <select id="filterStatus" onchange="render()" class="btn">
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="done">Done</option>
+    </select>
+
+    <button class="btn" onclick="goToCreate()">+ Create</button>
+    <button class="btn logout" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Today's Task</h3>
+  <div id="taskList"></div>
+</div>
+
+<script>
+// ==============================
+// AUTH
+// ==============================
+const token = localStorage.getItem("token")
+
+if (!token) {
+  alert("Login dulu")
+  window.location.href = "index.html"
+}
+
+// ==============================
+// NAVIGATION
+// ==============================
+function goToCreate() {
+  window.location.href = "create-task.html"
+}
+
+function logout() {
+  localStorage.removeItem("token")
+  window.location.href = "index.html"
+}
+
+// ==============================
+// RENDER
+// ==============================
+async function render() {
+  const list = document.getElementById("taskList")
+  list.innerHTML = ""
+
+  try {
+    const res = await fetch("http://localhost:8080/tasks", {
+      headers: { "Authorization": "Bearer " + token }
+    })
+
+    const tasks = await res.json()
+    const filter = document.getElementById("filterStatus").value
+
+    let filtered = tasks
+
+    if (filter !== "all") {
+      filtered = tasks.filter(t => t.status === filter)
+    }
+
+    if (filtered.length === 0) {
+      list.innerHTML = "<p>Tidak ada task</p>"
+      return
+    }
+
+    filtered.forEach(t => {
+      list.innerHTML += `
+        <div class="task ${t.status || 'pending'}">
+          <div class="title">${t.title}</div>
+          <div class="desc">${t.description || "-"}</div>
+          <div class="time">${t.start || "-"} - ${t.end || "-"}</div>
+
+          <div class="actions">
+            <button class="edit" onclick="editTask(${t.id})">Edit</button>
+            <button class="delete" onclick="deleteTask(${t.id})">Delete</button>
+            <button class="done-btn" onclick="doneTask(${t.id})">Done</button>
+          </div>
+        </div>
+      `
+    })
+
+  } catch (err) {
+    console.log(err)
+    list.innerHTML = "<p>Error ambil data</p>"
+  }
+}
+
+// ==============================
+// EDIT
+// ==============================
+async function editTask(id) {
+  const title = prompt("Judul baru:")
+  if (!title) return
+
+  await fetch(`http://localhost:8080/tasks/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token
+    },
+    body: JSON.stringify({ title })
+  })
+
+  render()
+}
+
+// ==============================
+// DELETE
+// ==============================
+async function deleteTask(id) {
+  if (!confirm("Hapus task?")) return
+
+  await fetch(`http://localhost:8080/tasks/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  })
+
+  render()
+}
+
+// ==============================
+// DONE
+// ==============================
+async function doneTask(id) {
+  await fetch(`http://localhost:8080/tasks/${id}/done`, {
+    method: "PUT",
+    headers: {
+      "Authorization": "Bearer " + token
+    }
+  })
+
+  render()
+}
+
+// ==============================
+render()
+// ==============================
+</script>
+
+</body>
+</html>

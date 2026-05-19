@@ -1,0 +1,68 @@
+version: "3.8"
+
+services:
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Rooting!123
+      MYSQL_DATABASE: tubes_devsecop
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: .
+    container_name: backend_app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASS: Rooting!123
+      DB_NAME: tubes_devsecop
+    depends_on:
+      - db
+    command: sh -c "sleep 20 && node app.js"
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+    - grafana_data:/var/lib/grafana
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    ports:
+      - "9100:9100"
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube
+    ports:
+      - "9001:9000"
+    environment:
+     SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+volumes:
+  db_data:
+  grafana_data:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
