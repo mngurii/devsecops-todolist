@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 
-const RPC_URL = "http://127.0.0.1:7545";
+const RPC_URL = "http://host.docker.internal:7545";
 const PRIVATE_KEY = "0xf14b679ec623da0114b1454e1517c43003cb6bfcb1be6aada41686bfb8f9567c";
 const CONTRACT_ADDRESS = "0x8B678747978cd69ebc9214B6E436Cb87283DeB78";
 
@@ -17,6 +17,7 @@ export default contract;
 async function testBlockchain() {
   try {
     const tx = await contract.addLog("TEST_LOG_HASH");
+
     console.log("Transaction sent!");
     console.log("TX Hash:", tx.hash);
 
