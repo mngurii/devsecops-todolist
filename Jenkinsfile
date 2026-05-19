@@ -23,7 +23,7 @@ pipeline {
 
         stage('SAST - SonarQube Scan') {
             steps {
-                sh 'sonar-scanner'
+                sh 'npx sonarqube-scanner'
             }
         }
 
