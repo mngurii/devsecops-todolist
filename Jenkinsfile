@@ -59,6 +59,7 @@ pipeline {
 
         stage('Monitoring Validation') {
             steps {
+                sh 'sleep 30'
                 sh 'curl http://localhost:9090'
                 sh 'curl http://localhost:3000'
             }
