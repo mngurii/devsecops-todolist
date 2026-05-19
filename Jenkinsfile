@@ -25,18 +25,19 @@ pipeline {
             }
         }
 
-        stage('SAST - SonarQube Scan') {
-            steps {
-                sh 'npx sonarqube-scanner'
-            }
-        }
-
         stage('Run Container Service') {
             steps {
                 sh 'docker compose down || true'
                 sh 'docker compose up -d'
             }
         }
+
+        stage('SAST - SonarQube Scan') {
+            steps {
+                sh 'npx sonarqube-scanner'
+            }
+        }
+
 
         stage('DAST - OWASP ZAP Scan') {
             steps {
