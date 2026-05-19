@@ -29,7 +29,7 @@ pipeline {
             steps {
                 sh 'docker compose down || true'
                 sh 'docker compose up -d'
-                sh 'sleep 60'
+                sh 'sleep 150'
             }
         }
 
