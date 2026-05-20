@@ -21,15 +21,15 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t backend-devsecop .'
+                docker build --no-cache -t backend-devsecop .
             }
         }
 
         stage('Run Container Service') {
             steps {
                 sh 'docker compose down || true'
+                sh 'docker compose build --no-cache'
                 sh 'docker compose up -d'
-                sh 'sleep 180'
             }
         }
 
