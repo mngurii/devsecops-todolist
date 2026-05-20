@@ -35,6 +35,11 @@ services:
       - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
 
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+
   prometheus:
     build:
       context: .
