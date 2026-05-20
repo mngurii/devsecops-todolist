@@ -32,9 +32,10 @@ pipeline {
                 sh 'docker compose up -d'
             }
         }
-
+    
         stage('SAST - SonarQube Scan') {
             steps {
+                sh 'sleep 120'
                 sh 'npx sonarqube-scanner'
             }
         }
