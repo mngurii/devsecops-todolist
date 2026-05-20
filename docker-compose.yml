@@ -36,19 +36,17 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
 
   prometheus:
-    build:
-      context: .
-      dockerfile: Dockerfile.prometheus
+    image: prom/prometheus
     ports:
       - "9090:9090"
-      
-   grafana:
+
+  grafana:
     image: grafana/grafana
     ports:
       - "3000:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      
+
   node-exporter:
     image: prom/node-exporter
     ports:
