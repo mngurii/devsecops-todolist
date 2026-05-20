@@ -36,7 +36,9 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
 
   prometheus:
-    image: prom/prometheus
+    build:
+      context: .
+      dockerfile: Dockerfile.prometheus
     ports:
       - "9090:9090"
 
