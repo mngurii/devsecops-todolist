@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 
 const RPC_URL = "http://host.docker.internal:7545";
-const PRIVATE_KEY = "0xa321e56032f045df71e17545c10d9f9ff6c947f17764fe6c0127094245d816e5";
+const PRIVATE_KEY = "0xb832d2822926f74841a713d94bf4b6f02f12b82143fe493d16bf7e7161d96782";
 const CONTRACT_ADDRESS = "0x8B678747978cd69ebc9214B6E436Cb87283DeB78";
 
 const ABI = [
