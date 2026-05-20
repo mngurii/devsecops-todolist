@@ -42,11 +42,12 @@ services:
 
   promtail:
     image: grafana/promtail:latest
+    container_name: promtail
     volumes:
-      - ./:/etc/promtail/
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./promtail-config.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock
-    command: -config.file=/etc/promtail/promtail-config.yml
+    command: -config.file=/etc/promtail/config.yml
+    restart: always
 
   prometheus:
     build:
