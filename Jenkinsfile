@@ -21,7 +21,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                docker build --no-cache -t backend-devsecop .
+                sh 'docker build --no-cache -t backend-devsecop .'
             }
         }
 
