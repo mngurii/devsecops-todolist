@@ -28,7 +28,7 @@ client.collectDefaultMetrics({ register })
 // ==========================
 // ENV / CONFIG
 // ==========================
-const DB_HOST = process.env.DB_HOST || "127.0.0.1"
+const DB_HOST = process.env.DB_HOST || "mysql"
 const DB_USER = process.env.DB_USER || "root"
 const DB_PASS = process.env.DB_PASS || "Rooting!123"
 const DB_NAME = process.env.DB_NAME || "tubes_devsecop"
