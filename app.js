@@ -88,6 +88,7 @@ app.use((req, res, next) => {
 // ==========================
 function auth(req, res, next) {
   const header = req.headers.authorization
+  securityEvents.inc({ type: 'unauthorized_access' })
   if (!header) return res.status(401).send("No token")
 
   const token = header.split(" ")[1]
@@ -97,6 +98,7 @@ function auth(req, res, next) {
     req.user = decoded
     next()
   } catch {
+    securityEvents.inc({ type: 'invalid_token' })
     res.status(401).send("Invalid token")
   }
 }
