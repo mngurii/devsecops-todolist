@@ -25,6 +25,14 @@ app.use(bodyParser.json())
 const register = new client.Registry()
 client.collectDefaultMetrics({ register })
 
+const securityEvents = new client.Counter({
+  name: 'security_events_total',
+  help: 'Total security events detected',
+  labelNames: ['type']
+})
+
+register.registerMetric(securityEvents)
+
 // ==========================
 // ENV / CONFIG
 // ==========================
@@ -56,7 +64,22 @@ db.connect(err => {
 // LOGGER
 // ==========================
 app.use((req, res, next) => {
+
   console.log(`REQ: ${req.method} ${req.url}`)
+
+  // Suspicious access
+  if (
+    req.url.includes("admin") ||
+    req.url.includes("DROP") ||
+    req.url.includes("SELECT") ||
+    req.url.includes("' OR 1=1")
+  ) {
+
+    securityEvents.inc({ type: 'suspicious_request' })
+
+    console.log("SECURITY ALERT: Suspicious request detected")
+  }
+
   next()
 })
 
@@ -121,6 +144,7 @@ app.post("/login", (req, res) => {
       }
 
       if (!results || results.length === 0) {
+        securityEvents.inc({ type: 'failed_login' })
         return res.status(401).send("Login gagal")
       }
 
@@ -129,6 +153,7 @@ app.post("/login", (req, res) => {
       const match = await bcrypt.compare(password, user.password)
 
       if (!match) {
+        securityEvents.inc({ type: 'failed_login' })
         return res.status(401).send("Login gagal")
       }
 
