@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const path = require("path")
 const client = require("prom-client")
+const helmet = require("helmet")
 
 // ==========================
 // APP CONFIG
@@ -16,6 +17,7 @@ const client = require("prom-client")
 const app = express()
 const PORT = process.env.PORT || 8080
 
+app.use(helmet())
 app.use(cors())
 app.use(bodyParser.json())
 
